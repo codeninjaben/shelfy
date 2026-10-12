@@ -33,7 +33,7 @@ export function Tour() {
       setPinned(enabled)
       if (!enabled || !section.current) return
       const rect = section.current.getBoundingClientRect()
-      const progress = -rect.top / (rect.height - window.innerHeight)
+      const progress = Math.max(0, -rect.top) / Math.max(1, rect.height - window.innerHeight)
       setActive(progress < 0.34 ? 0 : progress < 0.66 ? 1 : 2)
     }
     const onScroll = () => {
