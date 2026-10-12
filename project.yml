@@ -1,0 +1,83 @@
+name: Shelfy
+options:
+  bundleIdPrefix: com.benbreslow
+  deploymentTarget:
+    macOS: "26.0"
+  createIntermediateGroups: true
+  developmentLanguage: en
+  groupSortPosition: top
+settings:
+  base:
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    MACOSX_DEPLOYMENT_TARGET: "26.0"
+    SWIFT_VERSION: "6.0"
+    SWIFT_DEFAULT_ACTOR_ISOLATION: MainActor
+    SWIFT_APPROACHABLE_CONCURRENCY: YES
+    SWIFT_STRICT_CONCURRENCY: complete
+    DEVELOPMENT_TEAM: ZKXV3QNJ2V
+    CODE_SIGN_STYLE: Automatic
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    DEAD_CODE_STRIPPING: YES
+    ENABLE_STRICT_OBJC_MSGSEND: YES
+targets:
+  Shelfy:
+    type: application
+    platform: macOS
+    sources:
+      - path: Shelfy
+    info:
+      path: Shelfy/Supporting/Info.plist
+      properties:
+        CFBundleName: Shelfy
+        CFBundleDisplayName: Shelfy
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSMinimumSystemVersion: $(MACOSX_DEPLOYMENT_TARGET)
+        LSUIElement: true
+        LSApplicationCategoryType: public.app-category.productivity
+        NSHumanReadableCopyright: "Copyright © 2026 Ben Breslow. All rights reserved."
+        NSDownloadsFolderUsageDescription: Shelfy watches your Downloads folder so new files appear on your shelf.
+    entitlements:
+      path: Shelfy/Supporting/Shelfy.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.files.downloads.read-only: true
+        com.apple.security.files.user-selected.read-only: true
+        com.apple.security.files.bookmarks.app-scope: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.benbreslow.Shelfy
+        PRODUCT_NAME: Shelfy
+        ENABLE_HARDENED_RUNTIME: YES
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        COMBINE_HIDPI_IMAGES: YES
+        INFOPLIST_KEY_LSUIElement: YES
+  ShelfyTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: ShelfyTests
+    dependencies:
+      - target: Shelfy
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.benbreslow.ShelfyTests
+        SWIFT_DEFAULT_ACTOR_ISOLATION: nonisolated
+        BUNDLE_LOADER: $(TEST_HOST)
+        TEST_HOST: $(BUILT_PRODUCTS_DIR)/Shelfy.app/Contents/MacOS/Shelfy
+        GENERATE_INFOPLIST_FILE: YES
+schemes:
+  Shelfy:
+    build:
+      targets:
+        Shelfy: all
+        ShelfyTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - ShelfyTests
+    archive:
+      config: Release

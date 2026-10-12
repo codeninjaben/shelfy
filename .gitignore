@@ -1,0 +1,24 @@
+# Xcode build output and personal workspace state.
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+.DS_Store
+
+# Local environment, signing credentials, and generated packages.
+.env
+.env.*
+!.env.example
+*.p12
+*.p8
+*.mobileprovision
+*.provisionprofile
+*.dmg
+*.xcarchive/
+*.xcresult/
+
+# Website dependencies, build output, and local deployment state.
+node_modules/
+dist/
+.wrangler/
+*.tsbuildinfo

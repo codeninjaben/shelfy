@@ -1,0 +1,40 @@
+/* Release availability and source-build guidance. */
+.get__status {
+  max-width: 540px;
+  margin: 18px 0 0;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.get__build-note {
+  max-width: 540px;
+  margin: 24px 0 0;
+  font: 13px/1.7 var(--mono);
+}
+
+.open__build {
+  min-width: 0;
+  flex: 3 1 520px;
+}
+
+.open__build-note {
+  margin: 25px 0 0;
+  color: var(--body);
+  font: 13px/1.7 var(--mono);
+}
+
+.open__build-note a {
+  font-weight: 500;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 720px) {
+  .get__status {
+    font-size: 16px;
+  }
+
+  .get__build-note,
+  .open__build-note {
+    font-size: 12px;
+  }
+}

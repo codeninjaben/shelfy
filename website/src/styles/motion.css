@@ -1,0 +1,206 @@
+/* Time-based motion -------------------------------------------------------------- */
+
+@keyframes shine {
+  0% {
+    left: -64px;
+  }
+  40%,
+  100% {
+    left: calc(100% + 32px);
+  }
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes faqIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes t1drop {
+  0% { transform: translateY(-130px) rotate(-14deg); opacity: 0; }
+  20% { opacity: 1; }
+  50%, 82% { transform: translateY(0) rotate(-5deg); opacity: 1; }
+  100% { transform: translateY(0) rotate(-5deg); opacity: 0; }
+}
+
+@keyframes t2cursor {
+  0%, 12% { transform: translateX(0); }
+  48%, 82% { transform: translateX(148px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes t2tab {
+  0%, 38% { width: 0; }
+  56%, 84% { width: 22px; }
+  100% { width: 0; }
+}
+
+@keyframes t3drag {
+  0%, 14% { transform: translate(0, 0) rotate(6deg); opacity: 1; }
+  62%, 84% { transform: translate(-176px, 22px) rotate(-4deg) scale(0.88); opacity: 1; }
+  100% { transform: translate(-176px, 22px) rotate(-4deg) scale(0.88); opacity: 0; }
+}
+
+.t1 .doc { animation: t1drop 3.2s ease-in-out infinite; }
+.t2 .cursor { animation: t2cursor 3.2s ease-in-out infinite; }
+.t2 .tab { animation: t2tab 3.2s ease-in-out infinite; }
+.t3 .doc { animation: t3drag 3.2s ease-in-out infinite; }
+
+/* Scroll-driven motion -------------------------------------------------------------- */
+
+@keyframes navStuck {
+  from {
+    background-color: rgba(255, 255, 255, 0);
+    border-bottom-color: rgba(18, 19, 22, 0);
+  }
+  to {
+    background-color: rgba(255, 255, 255, 0.97);
+    border-bottom-color: #121316;
+  }
+}
+
+@keyframes titleSquish {
+  to {
+    font-stretch: 72%;
+    transform: translateY(-34px);
+  }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(46px);
+  }
+}
+
+@keyframes wsLight {
+  from {
+    color: #d3d8df;
+  }
+}
+
+@keyframes wsAccent {
+  from {
+    color: #d3d8df;
+    background-color: rgba(255, 255, 255, 0);
+    box-shadow: 0 0 0 rgba(18, 19, 22, 0);
+  }
+}
+
+@keyframes typeIn {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+}
+
+@keyframes scH1 { 0%, 26% { opacity: 1; transform: none; } 34%, 100% { opacity: 0; transform: translateY(-34px); } }
+@keyframes scH2 { 0%, 30% { opacity: 0; transform: translateY(34px); } 38%, 58% { opacity: 1; transform: none; } 66%, 100% { opacity: 0; transform: translateY(-34px); } }
+@keyframes scH3 { 0%, 62% { opacity: 0; transform: translateY(34px); } 70%, 100% { opacity: 1; transform: none; } }
+@keyframes scStep1 { 0%, 30% { background-color: var(--accent); } 36%, 100% { background-color: #ffffff; } }
+@keyframes scStep2 { 0%, 32% { background-color: #ffffff; } 38%, 62% { background-color: var(--accent); } 68%, 100% { background-color: #ffffff; } }
+@keyframes scStep3 { 0%, 64% { background-color: #ffffff; } 70%, 100% { background-color: var(--accent); } }
+@keyframes scCursor { 0% { transform: translate(0, 0); opacity: 1; } 14%, 28% { transform: translate(470px, -104px); } 42%, 60% { transform: translate(392px, -288px); opacity: 1; } 68%, 100% { transform: translate(392px, -288px); opacity: 0; } }
+@keyframes scTab { 0%, 4% { transform: translateX(100%); } 12%, 100% { transform: none; } }
+@keyframes scShelf { 0%, 15% { opacity: 0; transform: translateX(28px) scale(0.14); } 24%, 30% { opacity: 1; transform: none; } 36%, 64% { opacity: 0; transform: translateX(28px) scale(0.14); } 72%, 100% { opacity: 1; transform: translate(-236px, 18px) scale(1.12); } }
+@keyframes scPop { 0%, 38% { opacity: 0; transform: translateY(-10px) scale(0.92); } 45%, 60% { opacity: 1; transform: none; } 66%, 100% { opacity: 0; transform: translateY(-10px) scale(0.92); } }
+@keyframes scTray { 0%, 38% { background-color: rgba(255, 255, 255, 0); } 44%, 60% { background-color: rgba(255, 255, 255, 0.55); } 66%, 100% { background-color: rgba(255, 255, 255, 0); } }
+@keyframes scShapes { 0%, 66% { transform: translateX(0); } 100% { transform: translateX(-330px); } }
+
+@media (min-width: 1100px) and (min-height: 700px) and (prefers-reduced-motion: no-preference) {
+@supports (animation-timeline: view()) {
+  .nav {
+    animation: navStuck linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0 72px;
+  }
+
+  .hero__title {
+    animation: titleSquish linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0 620px;
+  }
+
+  .reveal {
+    animation: reveal linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 75%;
+  }
+
+  /* Statement: each word lights up in turn while the headline is pinned. */
+  .statement {
+    view-timeline: --words block;
+  }
+
+  .ws-word {
+    animation: wsLight linear both;
+    animation-timeline: --words;
+  }
+
+  .ws-accent {
+    animation-name: wsAccent;
+  }
+
+  .ws1 { animation-range: contain 4% contain 13%; }
+  .ws2 { animation-range: contain 12% contain 21%; }
+  .ws3 { animation-range: contain 20% contain 29%; }
+  .ws4 { animation-range: contain 28% contain 37%; }
+  .ws5 { animation-range: contain 36% contain 45%; }
+  .ws6 { animation-range: contain 44% contain 53%; }
+  .ws7 { animation-range: contain 52% contain 61%; }
+  .ws8 { animation-range: contain 60% contain 70%; }
+  .ws9 { animation-range: contain 69% contain 80%; }
+
+  /* Tour: edge (0–30%), menu bar (38–60%), glass (70–100%). */
+  .tour {
+    view-timeline: --show block;
+  }
+
+  .sc {
+    animation-timeline: --show;
+    animation-range: contain 0% contain 100%;
+    animation-fill-mode: both;
+    animation-timing-function: linear;
+  }
+
+  .sc-h1 { animation-name: scH1; }
+  .sc-h2 { animation-name: scH2; }
+  .sc-h3 { animation-name: scH3; }
+  .sc-step1 { animation-name: scStep1; }
+  .sc-step2 { animation-name: scStep2; }
+  .sc-step3 { animation-name: scStep3; }
+  .sc-cursor { animation-name: scCursor; }
+  .sc-tab { animation-name: scTab; }
+  .sc-shelf { animation-name: scShelf; }
+  .sc-pop { animation-name: scPop; }
+  .sc-tray { animation-name: scTray; }
+  .sc-shapes { animation-name: scShapes; }
+
+  /* Terminal: the commands type themselves as it scrolls into view. */
+  .term {
+    view-timeline: --term block;
+  }
+
+  .type {
+    animation: typeIn steps(30, end) both;
+    animation-timeline: --term;
+  }
+
+  .type--out {
+    animation-timing-function: steps(1, end);
+  }
+
+  .type1 { animation-range: cover 16% cover 30%; }
+  .type2 { animation-range: cover 30% cover 35%; }
+  .type3 { animation-range: cover 35% cover 41%; }
+  .type4 { animation-range: cover 43% cover 44%; }
+  .type5 { animation-range: cover 46% cover 47%; }
+}
+
+}

@@ -1,0 +1,320 @@
+:root {
+  --ink: #121316;
+  --muted: #5a606b;
+  --body: #3d424b;
+  --line: #aeb5bf;
+  --dot: #e2e6eb;
+  --panel: #f3f5f8;
+  --panel-dot: #cad1da;
+  --accent: #ff5a1f;
+  --hover: #b8400f;
+  --sun: #ffd23f;
+  --sky: #7fb2ff;
+  --mint: #5fd48a;
+  --stage: 100vh;
+  --nav-h: 72px;
+  --gutter: 32px;
+  --wrap: min(1376px, calc(100% - 2 * var(--gutter)));
+  --sans: 'Anybody', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'DM Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --apple: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', system-ui, sans-serif;
+  color-scheme: light;
+}
+
+@supports (height: 100svh) {
+  :root {
+    --stage: 100svh;
+  }
+}
+
+@media (max-width: 720px) {
+  :root {
+    --gutter: 16px;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  background: #ffffff;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background-color: #ffffff;
+  background-image: radial-gradient(var(--dot) 1.1px, transparent 1.5px);
+  background-size: 24px 24px;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img,
+svg {
+  display: block;
+}
+
+a {
+  color: var(--ink);
+}
+
+a:hover {
+  color: var(--hover);
+}
+
+::selection {
+  background: var(--ink);
+  color: #ffffff;
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+[tabindex='-1']:focus {
+  outline: none;
+}
+
+.page {
+  overflow-x: clip;
+}
+
+.skip {
+  position: fixed;
+  left: 16px;
+  top: 12px;
+  z-index: 300;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #ffffff;
+  font-family: var(--mono);
+  font-size: 14px;
+  text-decoration: none;
+  transform: translateY(-200%);
+  transition: transform 0.2s ease;
+}
+
+.skip:focus {
+  transform: none;
+  color: #ffffff;
+}
+
+/* Buttons ------------------------------------------------------------------ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 28px;
+  background: #ffffff;
+  border: 3px solid var(--ink);
+  border-radius: 999px;
+  box-shadow: 4px 4px 0 var(--ink);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 19px;
+  font-weight: 800;
+  font-stretch: 112%;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.btn:hover {
+  color: var(--ink);
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 var(--ink);
+}
+
+.btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
+.btn--accent {
+  background: var(--accent);
+}
+
+.btn--plain {
+  padding: 14px 26px;
+  font-weight: 700;
+}
+
+.btn--lg {
+  padding: 15px 30px;
+  font-size: 20px;
+}
+
+.btn--lg.btn--plain {
+  padding: 15px 28px;
+  font-weight: 800;
+}
+
+.btn--dark {
+  --shine: rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+  background: var(--ink);
+  box-shadow: 4px 4px 0 #ffffff;
+}
+
+.btn--dark:hover {
+  color: #ffffff;
+  box-shadow: 5px 5px 0 #ffffff;
+}
+
+.btn--dark:active {
+  box-shadow: 1px 1px 0 #ffffff;
+}
+
+/* A glint that sweeps across the download buttons every few seconds. */
+.shine {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.shine > * {
+  position: relative;
+  z-index: 1;
+}
+
+.shine::before,
+.shine::after {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  top: -10px;
+  bottom: -10px;
+  left: -64px;
+  background: var(--shine, rgba(255, 255, 255, 0.7));
+  transform: skewX(-20deg);
+  pointer-events: none;
+  animation: shine 3.2s cubic-bezier(0.6, 0, 0.3, 1) infinite;
+}
+
+.shine::before {
+  width: 18px;
+}
+
+.shine::after {
+  width: 7px;
+  margin-left: 28px;
+}
+
+/* Nav ------------------------------------------------------------------------ */
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: var(--nav-h);
+  border-bottom: 2px solid rgba(18, 19, 22, 0);
+}
+
+.nav__inner {
+  width: var(--wrap);
+  height: 100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.nav__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: 700;
+  font-stretch: 112%;
+  white-space: nowrap;
+}
+
+.nav__brand img {
+  width: 34px;
+  height: 34px;
+  filter: drop-shadow(2px 2px 0 var(--ink));
+}
+
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.nav__text {
+  padding: 12px 2px;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.nav__divider {
+  display: block;
+  width: 2px;
+  height: 22px;
+  background: var(--line);
+}
+
+.nav__icon {
+  display: inline-flex;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 20px;
+  background: #ffffff;
+  border: 2.5px solid var(--ink);
+  border-radius: 999px;
+  box-shadow: 2px 2px 0 var(--ink);
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+}
+
+.pill:hover {
+  color: var(--ink);
+  background: var(--accent);
+}
+
+@media (max-width: 720px) {
+  .nav__text,
+  .nav__divider {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
