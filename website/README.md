@@ -34,7 +34,7 @@ The Anybody and DM Mono fonts load from Google Fonts. System fonts are available
 
 ## Hosting
 
-The production domain is `https://getshelfy.app/`. `wrangler.jsonc` configures Cloudflare Workers static assets with `dist/` as the output directory and a route on that domain. The domain and zone must exist in the target Cloudflare account before deployment.
+The production domain is `https://getshelfy.app/`. `wrangler.jsonc` configures Cloudflare Workers static assets with `dist/` as the output directory and a custom domain binding. Cloudflare manages the DNS record and TLS certificate for that binding. The domain and zone must exist in the target Cloudflare account before deployment.
 
 Run the build before deploying the static output through the chosen hosting workflow. If the production domain changes, update `index.html`, `public/robots.txt`, `public/sitemap.xml`, and `wrangler.jsonc` together.
 

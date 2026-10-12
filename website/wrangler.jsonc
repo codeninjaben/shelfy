@@ -8,6 +8,6 @@
     "directory": "./dist"
   },
   "routes": [
-    { "pattern": "getshelfy.app/*", "zone_name": "getshelfy.app" }
+    { "pattern": "getshelfy.app", "custom_domain": true }
   ]
 }
