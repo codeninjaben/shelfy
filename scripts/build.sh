@@ -10,13 +10,20 @@ if command -v xcodegen >/dev/null 2>&1; then
     xcodegen generate --spec project.yml --quiet
 fi
 
-xcodebuild \
+mkdir -p build
+build_log="build/build-$configuration.log"
+if xcodebuild \
     -project Shelfy.xcodeproj \
     -scheme Shelfy \
     -configuration "$configuration" \
     -derivedDataPath build/DerivedData \
     -destination 'platform=macOS' \
-    build | grep -E "error:|warning:|BUILD (SUCCEEDED|FAILED)" || true
+    build > "$build_log" 2>&1; then
+    awk '/error:|warning:|BUILD (SUCCEEDED|FAILED)/' "$build_log"
+else
+    tail -n 60 "$build_log" >&2
+    exit 1
+fi
 
 app="build/DerivedData/Build/Products/$configuration/Shelfy.app"
 [[ -d "$app" ]] || { echo "Build failed: $app not found" >&2; exit 1; }

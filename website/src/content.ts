@@ -4,11 +4,11 @@ export const site = {
   note: 'free and open source · macOS 26 or later',
   repo: 'https://github.com/codeninjaben/shelfy',
   // Set this to a packaged Mac release URL when one is available.
-  releaseDownload: null as string | null,
+  releaseDownload: 'https://github.com/codeninjaben/shelfy/releases/download/v1.0.0/Shelfy-1.0.0-universal.zip' as string | null,
   sourceArchive: 'https://github.com/codeninjaben/shelfy/archive/refs/heads/main.zip',
   buildGuide: 'https://github.com/codeninjaben/shelfy#build-and-run',
-  author: 'ben breslow',
-  authorSite: 'https://benbreslow.dev',
+  author: 'Zazen Technology Group LLC',
+  authorSite: 'https://github.com/codeninjaben/shelfy',
 } as const
 
 export const statement = ['every', 'download', 'lands', 'on', 'a', 'shelf,', 'one', 'reach', 'away.'] as const
@@ -53,7 +53,7 @@ export const faqs: readonly Faq[] = [
   {
     q: 'What do I need?',
     a: site.releaseDownload
-      ? 'A Mac running macOS 26 or later. Building it yourself takes Xcode 26 or later.'
+      ? 'A Mac running macOS 26 or later, with Apple silicon or an Intel processor. Unzip the download and move Shelfy to Applications. Building from source takes Xcode 26 or later.'
       : 'For now, Shelfy is available to build from source. You’ll need macOS 26 or later, Xcode 26 or later, and your signing team selected in Xcode. Follow the',
     ...(!site.releaseDownload && { link: { label: 'build instructions', href: site.buildGuide } }),
   },

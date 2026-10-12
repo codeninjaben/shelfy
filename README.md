@@ -7,6 +7,11 @@ the file wherever you need it → the shelf tucks itself away.
 Native Swift/SwiftUI with AppKit for the floating panel, pointer tracking, drag-and-drop and the
 menu bar. Targets macOS 26+ and uses the system Liquid Glass APIs (`glassEffect`, Icon Composer icon).
 
+## Download
+
+Download the [signed and notarized universal Mac app](https://github.com/codeninjaben/shelfy/releases/download/v1.0.0/Shelfy-1.0.0-universal.zip),
+unzip it, and move Shelfy to Applications. Requires macOS 26 or later.
+
 ## Build and run
 
 Requirements: macOS 26 or later, Xcode 26 or later (developed with Xcode 27 on macOS 27.2).
@@ -23,8 +28,8 @@ scripts/build.sh Release   # prints the path to the built Shelfy.app
 xcodebuild test -project Shelfy.xcodeproj -scheme Shelfy -destination 'platform=macOS'
 ```
 
-- **Signing:** the project signs automatically with team `ZKXV3QNJ2V` (your personal Apple
-  Development certificate). Use another team by changing `DEVELOPMENT_TEAM` in `project.yml` (or
+- **Signing:** the project signs automatically with Zazen Technology Group LLC’s Apple
+  team `BZB8682VMH`. Use another team by changing `DEVELOPMENT_TEAM` in `project.yml` (or
   in Xcode's Signing & Capabilities). A stable signature matters: macOS ties the Downloads
   permission to it, and ad-hoc builds get asked again after every rebuild.
 - **Project file:** `Shelfy.xcodeproj` is generated from `project.yml` with XcodeGen. `scripts/build.sh`
@@ -214,3 +219,26 @@ each browser's on-disk sequence in `~/Downloads`, using files named `shelfy-sim-
 ## License
 
 Shelfy is available under the [MIT License](LICENSE).
+
+## Packaged releases
+
+Distribution uses Zazen Technology Group LLC’s Developer ID Application certificate,
+team `BZB8682VMH`, and hardened runtime. The download supports both Apple silicon
+and Intel Macs running macOS 26 or later.
+
+With the Zazen Apple account signed in to Xcode and its Developer ID certificate
+installed, run:
+
+```sh
+scripts/release.sh 1.0.0
+```
+
+For command-line credentials, create a Keychain profile with `xcrun notarytool store-credentials`
+and set `SHELFY_NOTARY_PROFILE=your-profile` when running the script.
+
+The script builds a universal Release archive, submits it to Apple, staples the accepted
+notarization ticket, verifies Gatekeeper acceptance, and writes the ZIP and `SHA256SUMS`
+to `build/releases/1.0.0/`. Upload those two files to the matching GitHub release.
+The website’s `site.releaseDownload` should point directly to the published ZIP.
+
+Signing identities and notarization credentials are never committed to this repository.

@@ -8,14 +8,14 @@ options:
   groupSortPosition: top
 settings:
   base:
-    MARKETING_VERSION: "1.0"
+    MARKETING_VERSION: "1.0.0"
     CURRENT_PROJECT_VERSION: "1"
     MACOSX_DEPLOYMENT_TARGET: "26.0"
     SWIFT_VERSION: "6.0"
     SWIFT_DEFAULT_ACTOR_ISOLATION: MainActor
     SWIFT_APPROACHABLE_CONCURRENCY: YES
     SWIFT_STRICT_CONCURRENCY: complete
-    DEVELOPMENT_TEAM: ZKXV3QNJ2V
+    DEVELOPMENT_TEAM: BZB8682VMH
     CODE_SIGN_STYLE: Automatic
     ENABLE_USER_SCRIPT_SANDBOXING: YES
     DEAD_CODE_STRIPPING: YES
@@ -36,7 +36,7 @@ targets:
         LSMinimumSystemVersion: $(MACOSX_DEPLOYMENT_TARGET)
         LSUIElement: true
         LSApplicationCategoryType: public.app-category.productivity
-        NSHumanReadableCopyright: "Copyright © 2026 Ben Breslow. All rights reserved."
+        NSHumanReadableCopyright: "Copyright © 2026 Zazen Technology Group LLC. All rights reserved."
         NSDownloadsFolderUsageDescription: Shelfy watches your Downloads folder so new files appear on your shelf.
     entitlements:
       path: Shelfy/Supporting/Shelfy.entitlements

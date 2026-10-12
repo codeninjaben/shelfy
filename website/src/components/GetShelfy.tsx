@@ -23,6 +23,9 @@ export function GetShelfy() {
           {site.releaseDownload ? 'source on GitHub ↗' : 'build instructions ↗'}
         </a>
       </div>
+      {site.releaseDownload && (
+        <p className="get__build-note">Signed and notarized · Apple silicon + Intel<br />Unzip Shelfy and move it to Applications.</p>
+      )}
       {!site.releaseDownload && (
         <p className="get__build-note">Requires Xcode 26 or later. Choose your signing team in Xcode before building.</p>
       )}
