@@ -39,3 +39,9 @@ The production domain is `https://getshelfy.app/`. `wrangler.jsonc` configures C
 Run the build before deploying the static output through the chosen hosting workflow. If the production domain changes, update `index.html`, `public/robots.txt`, `public/sitemap.xml`, and `wrangler.jsonc` together.
 
 The site links directly to the signed and notarized universal Mac ZIP on GitHub Releases. Update `site.releaseDownload` in `src/content.ts` when publishing a new version. Setting it to `null` enables the source ZIP and build instructions as a fallback. Distribution and copyright ownership are under Zazen Technology Group LLC.
+
+## Design and scrolling
+
+The rendered copy, tour artwork, and animation keyframes follow the [Claude draft](https://claude.ai/artifact/FtktCvdQq9fLztgVNfCDgG#page-dcb81aee8d83). Keep display text identical to that draft; download and source URLs point to the real release and repository.
+
+`src/lib/scrollEngine.ts` uses the deployed benbreslow.dev scroll engine’s interpolation, wheel speed, idle delay, directional settling, and keyboard navigation. It supports comma-separated rest points and hold ranges for the three scenes within Shelfy’s single tour. Reduced Motion retains native scrolling.

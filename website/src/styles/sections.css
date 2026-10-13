@@ -86,7 +86,7 @@
 .statement__stage {
   position: sticky;
   top: var(--nav-h);
-  height: min(640px, calc(var(--stage) - var(--nav-h)));
+  height: 640px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -121,7 +121,7 @@
 .tour__stage {
   position: sticky;
   top: var(--nav-h);
-  height: min(720px, calc(var(--stage) - var(--nav-h)));
+  height: 720px;
   max-width: 1300px;
   margin: 0 auto;
   padding: 48px 32px;
@@ -201,6 +201,7 @@
   background-image: radial-gradient(rgba(255, 255, 255, 0.45) 1.2px, transparent 1.6px);
   font-family: var(--apple);
   color: #1d1d1f;
+  box-sizing: content-box;
 }
 
 .tour__screen {
@@ -213,6 +214,7 @@
 }
 
 .shape {
+  box-sizing: content-box;
   position: absolute;
   border: 3px solid var(--ink);
 }
@@ -232,6 +234,7 @@
 .tour__shapes .s5 { left: 60px; top: 330px; width: 260px; height: 84px; border-radius: 42px; background: var(--mint); transform: rotate(-6deg); }
 
 .menubar {
+  box-sizing: content-box;
   position: absolute;
   left: 0;
   right: 0;
@@ -274,6 +277,7 @@
 }
 
 .tour__tab {
+  box-sizing: content-box;
   position: absolute;
   right: 0;
   top: 190px;

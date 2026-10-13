@@ -7,8 +7,8 @@ export const site = {
   releaseDownload: 'https://github.com/codeninjaben/shelfy/releases/download/v1.0.0/Shelfy-1.0.0-universal.zip' as string | null,
   sourceArchive: 'https://github.com/codeninjaben/shelfy/archive/refs/heads/main.zip',
   buildGuide: 'https://github.com/codeninjaben/shelfy#build-and-run',
-  author: 'Zazen Technology Group LLC',
-  authorSite: 'https://github.com/codeninjaben/shelfy',
+  author: 'ben breslow',
+  authorSite: 'https://benbreslow.dev',
 } as const
 
 export const statement = ['every', 'download', 'lands', 'on', 'a', 'shelf,', 'one', 'reach', 'away.'] as const
@@ -44,17 +44,11 @@ export type Faq = { q: string; a: string; link?: { label: string; href: string }
 export const faqs: readonly Faq[] = [
   { q: 'Is it really free?', a: 'Yes. Shelfy is free and open source, and all of the code is on', link: { label: 'GitHub', href: site.repo } },
   { q: 'Does it move my files?', a: 'Never. The shelf only keeps references, so clearing it leaves the originals right where they are.' },
-  { q: 'What about half-finished downloads?', a: 'Shelfy filters out temporary browser downloads and waits for files to settle before adding them to your shelf.' },
+  { q: 'What about half-finished downloads?', a: 'They never show up. A file only lands on the shelf once the download is complete.' },
   {
     q: 'Which browsers does it work with?',
     a: 'All of them. Shelfy watches the folder, not the browser, so Safari, Chrome, Firefox, Arc and anything else that saves to Downloads just works.',
   },
   { q: 'Can it watch a different folder?', a: 'Yes. Pick any folder in Settings and new files there land on the shelf instead.' },
-  {
-    q: 'What do I need?',
-    a: site.releaseDownload
-      ? 'A Mac running macOS 26 or later, with Apple silicon or an Intel processor. Unzip the download and move Shelfy to Applications. Building from source takes Xcode 26 or later.'
-      : 'For now, Shelfy is available to build from source. You’ll need macOS 26 or later, Xcode 26 or later, and your signing team selected in Xcode. Follow the',
-    ...(!site.releaseDownload && { link: { label: 'build instructions', href: site.buildGuide } }),
-  },
+  { q: 'What do I need?', a: 'A Mac running macOS 26 or later. Building it yourself takes Xcode 26 or later.' },
 ]

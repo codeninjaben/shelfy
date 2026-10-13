@@ -78,6 +78,6 @@ export const TrayIcon = ({ size = 16, ...p }: IconProps) => (
 
 export const CursorIcon = ({ size = 26, ...p }: IconProps) => (
   <svg aria-hidden="true" width={size} height={(size * 36) / 26} viewBox="0 0 26 36" {...p}>
-    <path d="M2 2v27l7-6.5 4.6 10.6 4.6-2-4.5-10.4h9.6z" fill="#121316" stroke="#ffffff" strokeWidth="2" strokeLinejoin="round" />
+    <path d="M2 2v27l7-6.5 4.6 10.6 4.6-2-4.5-10.4h9.6z" fill={p.fill ?? "#121316"} stroke="#ffffff" strokeWidth="2" strokeLinejoin="round" />
   </svg>
 )

@@ -97,13 +97,11 @@ export function Customize() {
   }, [])
 
   const menuBarOnly = mode === 'menuBar'
-  const hint = open
-    ? 'your downloads, within reach'
-    : menuBarOnly
-      ? 'try the menu bar icon'
-      : visibility === 'always'
-        ? 'hover or tap the edge tab'
-        : `hover or tap the ${edge} edge`
+  const hint = menuBarOnly
+    ? 'shelfy lives in the menu bar'
+    : visibility === 'always'
+      ? 'rest on the tab to open the shelf'
+      : `move toward the ${edge} edge`
   const miniClass = [
     'screen mini',
     `mode-${menuBarOnly ? 'menubar' : mode}`,
@@ -111,7 +109,7 @@ export function Customize() {
     visibility === 'always' ? 'vis-always' : 'vis-near',
     `pos-${position}`,
     edgeRevealed || open?.surface === 'edge' ? 'is-edge-revealed' : '',
-    open ? `is-${open.surface === 'menuBar' ? 'menu' : 'edge'}-open` : '',
+    menuBarOnly ? 'is-menu-open' : open ? `is-${open.surface === 'menuBar' ? 'menu' : 'edge'}-open` : '',
   ].join(' ')
 
   return (
@@ -133,7 +131,7 @@ export function Customize() {
           <h2 id="customize-title" className="h2 reveal">
             Make it yours.
           </h2>
-          <p className="mono-note">a few settings. a shelf that feels like you.</p>
+          <p className="mono-note">the real settings. try them.</p>
           <div className="controls">
             <Control
               label="show shelfy in"
@@ -207,7 +205,7 @@ export function Customize() {
                     type="button"
                     className="mini-tray"
                     aria-label="Toggle menu bar shelf preview"
-                    aria-expanded={open?.surface === 'menuBar'}
+                    aria-expanded={menuBarOnly || open?.surface === 'menuBar'}
                     aria-controls={`${previewId}-menu`}
                     onClick={() => toggleSurface('menuBar')}
                     onPointerEnter={(event) => { if (event.pointerType === 'mouse') showOnHover('menuBar') }}
@@ -225,7 +223,7 @@ export function Customize() {
               className="mini-pop"
               role="region"
               aria-label="Menu bar shelf: three example downloads"
-              aria-hidden={open?.surface !== 'menuBar'}
+              aria-hidden={!menuBarOnly && open?.surface !== 'menuBar'}
               onPointerEnter={cancelClose}
               onPointerLeave={() => leaveSurface('menuBar')}
             >
@@ -270,7 +268,7 @@ export function Customize() {
 
             <span className="mini__hint" aria-live="polite">{hint}</span>
           </div>
-          <p id={`${previewId}-instructions`} className="customize__instructions">
+          <p id={`${previewId}-instructions`} className="sr-only">
             Hover or tap to open. With a keyboard, use Tab and Enter. Escape closes the preview.
           </p>
         </div>

@@ -113,7 +113,6 @@
 @keyframes scTray { 0%, 38% { background-color: rgba(255, 255, 255, 0); } 44%, 60% { background-color: rgba(255, 255, 255, 0.55); } 66%, 100% { background-color: rgba(255, 255, 255, 0); } }
 @keyframes scShapes { 0%, 66% { transform: translateX(0); } 100% { transform: translateX(-330px); } }
 
-@media (min-width: 1100px) and (min-height: 700px) and (prefers-reduced-motion: no-preference) {
 @supports (animation-timeline: view()) {
   .nav {
     animation: navStuck linear both;
@@ -201,6 +200,4 @@
   .type3 { animation-range: cover 35% cover 41%; }
   .type4 { animation-range: cover 43% cover 44%; }
   .type5 { animation-range: cover 46% cover 47%; }
-}
-
 }

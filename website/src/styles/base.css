@@ -15,7 +15,7 @@
   --nav-h: 72px;
   --gutter: 32px;
   --wrap: min(1376px, calc(100% - 2 * var(--gutter)));
-  --sans: 'Anybody', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --sans: 'Anybody', ui-sans-serif, system-ui, sans-serif;
   --mono: 'DM Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   --apple: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', system-ui, sans-serif;
   color-scheme: light;
@@ -53,8 +53,8 @@ body {
   background-size: 24px 24px;
   color: var(--ink);
   font-family: var(--sans);
-  font-size: 17px;
-  line-height: 1.5;
+  font-size: 16px;
+  line-height: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -127,7 +127,7 @@ a:hover {
   font-size: 19px;
   font-weight: 800;
   font-stretch: 112%;
-  line-height: 1.2;
+  line-height: normal;
   text-decoration: none;
   cursor: pointer;
   transition:
