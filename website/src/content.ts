@@ -4,7 +4,7 @@ export const site = {
   note: 'free and open source · macOS 26 or later',
   repo: 'https://github.com/codeninjaben/shelfy',
   // Set this to a packaged Mac release URL when one is available.
-  releaseDownload: 'https://github.com/codeninjaben/shelfy/releases/download/v1.0.0/Shelfy-1.0.0-universal.zip' as string | null,
+  releaseDownload: 'https://github.com/codeninjaben/shelfy/releases/download/v1.0.0/Shelfy-1.0.0.dmg' as string | null,
   sourceArchive: 'https://github.com/codeninjaben/shelfy/archive/refs/heads/main.zip',
   buildGuide: 'https://github.com/codeninjaben/shelfy#build-and-run',
   author: 'ben breslow',

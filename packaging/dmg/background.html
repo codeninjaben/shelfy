@@ -1,0 +1,105 @@
+<!doctype html>
+<!--
+  The Shelfy disk image window background ("Grid paper"), 680 × 420 points.
+  Finder draws the two icons and their labels on top: Shelfy.app centered at (180, 190) and
+  the Applications link at (500, 190), 128-point icons with labels below (see settings.py).
+  Finder always draws those labels dark on a window with a background picture, so the label
+  areas stay light. Regenerate background.png and background@2x.png with:
+    swift scripts/make-dmg-background.swift packaging/dmg/background.html packaging/dmg
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Shelfy disk image background</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Anybody:wdth,wght@50..150,100..900&family=DM+Mono:wght@400;500&display=block"
+    />
+    <style>
+      html,
+      body {
+        margin: 0;
+        background: #ffffff;
+      }
+
+      .window {
+        position: relative;
+        width: 680px;
+        height: 420px;
+        overflow: hidden;
+        background-color: #ffffff;
+        background-image: radial-gradient(#e2e6eb 1.1px, transparent 1.5px);
+        background-size: 24px 24px;
+        color: #121316;
+      }
+
+      .wordmark {
+        position: absolute;
+        left: 28px;
+        top: 20px;
+        font-family: 'Anybody', sans-serif;
+        font-size: 26px;
+        font-weight: 850;
+        font-stretch: 125%;
+        letter-spacing: -0.04em;
+        line-height: 1;
+      }
+
+      /* Shelfy.app sits on a card; the Applications link sits in a dashed drop target. */
+      .slot {
+        position: absolute;
+        top: 108px;
+        width: 160px;
+        height: 196px;
+        box-sizing: border-box;
+        border-radius: 28px;
+      }
+
+      .slot--app {
+        left: 100px;
+        background: #ffffff;
+        border: 3px solid #121316;
+        box-shadow: 6px 6px 0 #121316;
+      }
+
+      .slot--target {
+        left: 420px;
+        border: 3px dashed #121316;
+      }
+
+      .arrow {
+        position: absolute;
+        left: 266px;
+        top: 156px;
+        overflow: visible;
+      }
+
+      .caption {
+        position: absolute;
+        left: 50%;
+        top: 340px;
+        transform: translateX(-50%);
+        padding: 9px 18px;
+        white-space: nowrap;
+        background: #ffffff;
+        border: 2.5px solid #121316;
+        border-radius: 999px;
+        box-shadow: 3px 3px 0 #121316;
+        font-family: 'DM Mono', monospace;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="window">
+      <div class="wordmark">shelfy</div>
+      <div class="slot slot--app"></div>
+      <div class="slot slot--target"></div>
+      <svg class="arrow" width="150" height="70" viewBox="0 0 150 70" aria-hidden="true">
+        <path d="M6 24 H92 V8 L140 35 L92 62 V46 H6 Z" transform="translate(5 5)" fill="#121316" />
+        <path d="M6 24 H92 V8 L140 35 L92 62 V46 H6 Z" fill="#ff5a1f" stroke="#121316" stroke-width="3" stroke-linejoin="round" />
+      </svg>
+      <div class="caption">drag shelfy into Applications</div>
+    </div>
+  </body>
+</html>

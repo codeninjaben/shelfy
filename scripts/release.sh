@@ -1,7 +1,9 @@
 #!/bin/zsh
-# Create a universal Developer ID-signed, notarized, and stapled Shelfy ZIP.
+# Create a universal Developer ID-signed, notarized, and stapled Shelfy, packaged as a ZIP and
+# as the drag-to-Applications disk image (scripts/make-dmg.sh).
 # Usage: scripts/release.sh [version]
-# Optional: SHELFY_NOTARY_PROFILE=profile-name to use notarytool instead of Xcode.
+# Optional: SHELFY_NOTARY_PROFILE=profile-name to use notarytool instead of Xcode; it also
+# lets make-dmg.sh sign, notarize, and staple the disk image itself.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -79,6 +81,8 @@ spctl --assess --type execute --verbose=2 "$app"
 
 # Repackage after stapling so the downloaded app carries Apple's ticket offline.
 ditto -c -k --sequesterRsrc --keepParent "$app" "$download_zip"
-(cd "$release_dir" && shasum -a 256 "${download_zip:t}" > SHA256SUMS)
+# The disk image wraps the same stapled app and writes SHA256SUMS for both downloads.
+download_dmg="$(scripts/make-dmg.sh "$app" "$release_version" | tail -n 1)"
 print "$download_zip"
+print "$download_dmg"
 print "$release_dir/SHA256SUMS"

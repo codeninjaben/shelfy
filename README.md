@@ -9,8 +9,9 @@ menu bar. Targets macOS 26+ and uses the system Liquid Glass APIs (`glassEffect`
 
 ## Download
 
-Download the [signed and notarized universal Mac app](https://github.com/codeninjaben/shelfy/releases/download/v1.0.0/Shelfy-1.0.0-universal.zip),
-unzip it, and move Shelfy to Applications. Requires macOS 26 or later.
+Download the [signed and notarized universal Mac app](https://github.com/codeninjaben/shelfy/releases/download/v1.0.0/Shelfy-1.0.0.dmg),
+open it, and drag Shelfy into Applications. Requires macOS 26 or later. The
+[release](https://github.com/codeninjaben/shelfy/releases/tag/v1.0.0) also has a ZIP of the same app.
 
 ## Build and run
 
@@ -237,8 +238,16 @@ For command-line credentials, create a Keychain profile with `xcrun notarytool s
 and set `SHELFY_NOTARY_PROFILE=your-profile` when running the script.
 
 The script builds a universal Release archive, submits it to Apple, staples the accepted
-notarization ticket, verifies Gatekeeper acceptance, and writes the ZIP and `SHA256SUMS`
-to `build/releases/1.0.0/`. Upload those two files to the matching GitHub release.
-The website’s `site.releaseDownload` should point directly to the published ZIP.
+notarization ticket, verifies Gatekeeper acceptance, and writes the ZIP, the disk image and
+`SHA256SUMS` to `build/releases/1.0.0/`. Upload those three files to the matching GitHub release.
+The website’s `site.releaseDownload` should point directly to the published disk image.
+
+`scripts/make-dmg.sh path/to/Shelfy.app` builds just the disk image from an already stapled app.
+It uses [dmgbuild](https://github.com/dmgbuild/dmgbuild) (installed into `build/dmg-venv` on
+first use) to lay out the "drag into Applications" window drawn in `packaging/dmg/background.html`.
+After editing that page, regenerate its images with
+`swift scripts/make-dmg-background.swift packaging/dmg/background.html packaging/dmg`.
+With `SHELFY_NOTARY_PROFILE` set, the disk image itself is also signed, notarized and stapled;
+otherwise it stays unsigned, and macOS checks the stapled app inside when it first opens.
 
 Signing identities and notarization credentials are never committed to this repository.
