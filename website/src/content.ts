@@ -4,7 +4,7 @@ export const site = {
   note: 'free and open source · macOS 26 or later',
   repo: 'https://github.com/codeninjaben/shelfy',
   // Set this to a packaged Mac release URL when one is available.
-  releaseDownload: 'https://github.com/codeninjaben/shelfy/releases/download/v1.0.0/Shelfy-1.0.0.dmg' as string | null,
+  releaseDownload: 'https://github.com/codeninjaben/shelfy/releases/download/v1.1.0/Shelfy-1.1.0.dmg' as string | null,
   sourceArchive: 'https://github.com/codeninjaben/shelfy/archive/refs/heads/main.zip',
   buildGuide: 'https://github.com/codeninjaben/shelfy#build-and-run',
   author: 'ben breslow',
@@ -36,14 +36,17 @@ export const chips = [
 export const facts = [
   { icon: 'link', color: 'sun', title: 'References, not copies.', text: 'Clearing the shelf never moves or deletes a file.' },
   { icon: 'offline', color: 'sky', title: 'No network access.', text: 'Its sandbox has no way online, so nothing leaves your Mac.' },
-  { icon: 'lock', color: 'mint', title: 'Read-only.', text: 'It can see your Downloads folder, never change it.' },
+  { icon: 'lock', color: 'mint', title: 'Sandboxed.', text: 'It can only reach Downloads and the folder you choose.' },
 ] as const
 
 export type Faq = { q: string; a: string; link?: { label: string; href: string } }
 
 export const faqs: readonly Faq[] = [
   { q: 'Is it really free?', a: 'Yes. Shelfy is free and open source, and all of the code is on', link: { label: 'GitHub', href: site.repo } },
-  { q: 'Does it move my files?', a: 'Never. The shelf only keeps references, so clearing it leaves the originals right where they are.' },
+  {
+    q: 'Does it move my files?',
+    a: 'Only when you ask. The shelf keeps references, so clearing it leaves the originals where they are. The trash can on a file moves it to the Trash, and Put Back brings it back.',
+  },
   { q: 'What about half-finished downloads?', a: 'They never show up. A file only lands on the shelf once the download is complete.' },
   {
     q: 'Which browsers does it work with?',
