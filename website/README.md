@@ -42,6 +42,6 @@ The site links directly to the Mac disk image (the signed and notarized universa
 
 ## Design and scrolling
 
-The rendered copy, tour artwork, and animation keyframes follow the [Claude draft](https://claude.ai/artifact/FtktCvdQq9fLztgVNfCDgG#page-dcb81aee8d83). Keep display text identical to that draft; download and source URLs point to the real release and repository.
+The rendered copy, tour artwork, and animation keyframes follow the [Claude draft](https://claude.ai/artifact/FtktCvdQq9fLztgVNfCDgG#page-dcb81aee8d83). Keep display text identical to that draft, except where the app has changed since (1.1.0's Move to Trash replaced the read-only fact and the FAQ answer about moving files); download and source URLs point to the real release and repository.
 
 `src/lib/scrollEngine.ts` uses the deployed benbreslow.dev scroll engine’s interpolation, wheel speed, idle delay, directional settling, and keyboard navigation. It supports comma-separated rest points and hold ranges for the three scenes within Shelfy’s single tour. Reduced Motion retains native scrolling.

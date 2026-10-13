@@ -9,9 +9,9 @@ menu bar. Targets macOS 26+ and uses the system Liquid Glass APIs (`glassEffect`
 
 ## Download
 
-Download the [signed and notarized universal Mac app](https://github.com/codeninjaben/shelfy/releases/download/v1.0.0/Shelfy-1.0.0.dmg),
+Download the [signed and notarized universal Mac app](https://github.com/codeninjaben/shelfy/releases/download/v1.1.0/Shelfy-1.1.0.dmg),
 open it, and drag Shelfy into Applications. Requires macOS 26 or later. The
-[release](https://github.com/codeninjaben/shelfy/releases/tag/v1.0.0) also has a ZIP of the same app.
+[release](https://github.com/codeninjaben/shelfy/releases/tag/v1.1.0) also has a ZIP of the same app.
 
 ## Build and run
 
