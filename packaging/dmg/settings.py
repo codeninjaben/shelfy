@@ -18,8 +18,10 @@ hide_extensions = [appname]
 icon = defines["icon"]  # noqa: F821
 background = defines["background"]  # noqa: F821
 
-# The window's content area is exactly the 680 × 420 point background.
-window_rect = ((200, 140), (680, 420))
+# Finder sizes the whole window, title bar included: 480 points is the 32-point title bar
+# over the 680 × 460 background. A path or status bar, when the visitor's Finder shows one,
+# covers only plain dot grid at the bottom.
+window_rect = ((200, 120), (680, 480))
 default_view = "icon-view"
 show_status_bar = False
 show_tab_view = False
