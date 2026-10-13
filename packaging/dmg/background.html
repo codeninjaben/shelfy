@@ -1,10 +1,14 @@
 <!doctype html>
 <!--
-  The Shelfy disk image window background ("Grid paper"), 680 × 420 points.
+  The Shelfy disk image window background ("Grid paper"), 680 × 460 points.
   Finder draws the two icons and their labels on top: Shelfy.app centered at (180, 190) and
   the Applications link at (500, 190), 128-point icons with labels below (see settings.py).
   Finder always draws those labels dark on a window with a background picture, so the label
-  areas stay light. Regenerate background.png and background@2x.png with:
+  areas stay light.
+  The window is 480 points tall including its 32-point title bar. Finder's path and status
+  bars follow the visitor's own Finder settings and cover the bottom of the window when shown,
+  so everything sits in the top 400 points and the rest is plain dot grid.
+  Regenerate background.png and background@2x.png with:
     swift scripts/make-dmg-background.swift packaging/dmg/background.html packaging/dmg
 -->
 <html lang="en">
@@ -25,7 +29,7 @@
       .window {
         position: relative;
         width: 680px;
-        height: 420px;
+        height: 460px;
         overflow: hidden;
         background-color: #ffffff;
         background-image: radial-gradient(#e2e6eb 1.1px, transparent 1.5px);
