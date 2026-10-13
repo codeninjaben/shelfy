@@ -58,8 +58,9 @@ xcodebuild test -project Shelfy.xcodeproj -scheme Shelfy -destination 'platform=
 | Click the "3 Files ›" capsule or the stack | Switches between the stack and a scrollable grid |
 | Double-click / Return / ⌘O | Opens the file, then the shelf tucks away |
 | Space / ⌘Y | Quick Look |
-| Right-click an item | Open, Open With, Quick Look, Show in Finder, Copy, Remove from Shelf |
-| Delete | Removes the selected item(s) from the shelf (never the file) |
+| Right-click an item | Open, Open With, Quick Look, Show in Finder, Copy, Remove from Shelf, Move to Trash |
+| Hover a file ▸ ✕ (top left) / Delete | Removes it from the shelf; the file stays where it is |
+| Hover a file ▸ trash can (top right) / ⌘⌫ | Moves the file itself to the Trash; **Put Back** is offered for 6 seconds (also ⌘Z) |
 | ✕ in the corner | Clears the shelf; **Undo Clear** is offered for 6 seconds (also ⌘Z) |
 | Esc / › button / move the pointer away | Tucks the shelf away |
 | Menu bar icon | The same shelf in a popover; right-click for Settings and Quit |
@@ -105,7 +106,8 @@ watermark. On first launch it adds nothing.
 **References.** Items follow renames and moves (bookmarks plus inode check), disappear when the
 file is deleted or trashed, and are never confused with a new download that reuses the name.
 Losing permission marks an item unavailable instead of dropping it. Clear and Remove only touch the
-shelf.
+shelf. Move to Trash is the one action that moves a file, and only when you ask: Shelfy has read-write
+access to Downloads (and the folder you choose) for that and for Put Back.
 
 **Desktop behavior.** The edge panel is a borderless, non-activating `NSPanel` on every Space.
 Collapsed, it covers only the tab plus an 18–28 pt activation strip (set by Hover Sensitivity). While the tab
@@ -195,12 +197,14 @@ What was actually exercised on this Mac (macOS 27.2):
 4. Download two more files and confirm the stack. Click "3 Files ›" for the grid, then drag one cell into Mail or a browser upload field.
 5. Click a thumbnail, then press Space (Quick Look), Esc (closes Quick Look), Esc again (shelf closes).
 6. Click ✕ and confirm the files are still in Downloads. Undo Clear restores the shelf.
+   Hover a file and click the trash can: the file goes to the Trash, and Put Back (or ⌘Z) returns it to Downloads and the shelf.
 7. Cancel a download midway in Safari or Chrome. Nothing should appear.
 8. Try the menu bar popover, Settings (left edge, position, display), and Reduce Motion/Transparency in System Settings ▸ Accessibility ▸ Display.
 
 `scripts/simulate-downloads.sh chrome|firefox|safari|direct|multiple|interrupted|cleanup` replays
 each browser's on-disk sequence in `~/Downloads`, using files named `shelfy-sim-…`. With the Debug build,
-`swift scripts/shelfy-debug.swift expand|grid|popover|settings|collapse` drives the UI for screenshots.
+`swift scripts/shelfy-debug.swift expand|grid|popover|settings|collapse` drives the UI for screenshots, and
+`trash-sim` / `undo` move the `shelfy-sim-…` files to the Trash and put them back.
 
 ## Known limitations
 
@@ -216,6 +220,8 @@ each browser's on-disk sequence in `~/Downloads`, using files named `shelfy-sim-
 - **Full-screen detection** looks for a window covering the whole display, including the menu bar
   area. Apps that fake full screen with an ordinary maximized window (Roblox, for example) keep the tab visible.
 - **Strings** are English only so far; there's no strings catalog yet.
+- **Folders chosen in Shelfy 1.0.0** were granted read-only. Move to Trash shows "Couldn’t Move to Trash"
+  for files there until you choose the folder again in Settings. Downloads itself needs nothing.
 
 ## License
 

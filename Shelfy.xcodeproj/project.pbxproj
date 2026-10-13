@@ -324,11 +324,11 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					5A46073D7EF38BA23876EB46 = {
-						DevelopmentTeam = ZKXV3QNJ2V;
+						DevelopmentTeam = BZB8682VMH;
 						ProvisioningStyle = Automatic;
 					};
 					D62A6283C9DEDCCDC6CE9BB3 = {
-						DevelopmentTeam = ZKXV3QNJ2V;
+						DevelopmentTeam = BZB8682VMH;
 						ProvisioningStyle = Automatic;
 					};
 				};

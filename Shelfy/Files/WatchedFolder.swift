@@ -100,7 +100,7 @@ final class WatchedFolder {
 
     private func use(_ chosen: URL) {
         let standardized = chosen.standardizedFileURL
-        guard let bookmark = try? standardized.bookmarkData(options: [.withSecurityScope, .securityScopeAllowOnlyReadAccess],
+        guard let bookmark = try? standardized.bookmarkData(options: [.withSecurityScope],
                                                            includingResourceValuesForKeys: nil, relativeTo: nil) else {
             Log.app.error("Could not create a bookmark for the chosen folder")
             return
@@ -121,7 +121,7 @@ final class WatchedFolder {
             return
         }
         if resolved.startAccessingSecurityScopedResource() { scopedURL = resolved }
-        if isStale, let fresh = try? resolved.bookmarkData(options: [.withSecurityScope, .securityScopeAllowOnlyReadAccess],
+        if isStale, let fresh = try? resolved.bookmarkData(options: [.withSecurityScope],
                                                           includingResourceValuesForKeys: nil, relativeTo: nil) {
             defaults.set(fresh, forKey: Self.bookmarkKey)
         }

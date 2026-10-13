@@ -27,7 +27,7 @@ nonisolated enum FileLocator {
                     var refreshed: Data?
                     if isStale {
                         let scope: URL.BookmarkCreationOptions = item.bookmarkIsSecurityScoped
-                            ? [.withSecurityScope, .securityScopeAllowOnlyReadAccess] : []
+                            ? [.withSecurityScope] : []
                         refreshed = try? url.bookmarkData(options: scope, includingResourceValuesForKeys: nil, relativeTo: nil)
                     }
                     return .found(url, bookmark: refreshed)

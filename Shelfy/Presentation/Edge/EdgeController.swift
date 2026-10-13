@@ -214,7 +214,7 @@ final class EdgeController: NSObject {
     /// With "Hide When Empty", an empty basket takes Shelfy off the edge entirely.
     private var tabIsUnwanted: Bool {
         app.preferences.hideTabWhenEmpty && app.collection.items.isEmpty
-            && !app.collection.canUndoClear && !isPeeking
+            && !app.collection.canUndo && !isPeeking
     }
 
     private var tabShouldShow: Bool {

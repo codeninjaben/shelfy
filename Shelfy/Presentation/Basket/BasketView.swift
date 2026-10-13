@@ -26,6 +26,8 @@ struct BasketView: View {
         .animation(contentAnimation, value: model.items.map(\.id))
         .animation(contentAnimation, value: model.effectiveMode)
         .animation(contentAnimation, value: model.collection.canUndoClear)
+        .animation(contentAnimation, value: model.collection.canPutBack)
+        .animation(contentAnimation, value: model.collection.notice)
     }
 
     private var contentAnimation: Animation? {
@@ -120,7 +122,17 @@ struct BasketView: View {
 
     @ViewBuilder
     private var footer: some View {
-        if model.collection.canUndoClear && model.items.isEmpty {
+        if let notice = model.collection.notice {
+            SummaryCapsule(title: notice == .trashFailed ? "Couldn’t Move to Trash" : "Couldn’t Put Back",
+                           symbol: "exclamationmark.triangle", trailing: nil)
+                .transition(.opacity)
+        } else if model.collection.canPutBack {
+            SummaryCapsule(title: "Put Back", symbol: "arrow.uturn.backward", trailing: nil) {
+                model.putBack()
+            }
+            .accessibilityHint("Moves the file back out of the Trash")
+            .transition(.opacity)
+        } else if model.collection.canUndoClear && model.items.isEmpty {
             SummaryCapsule(title: "Undo Clear", symbol: "arrow.uturn.backward", trailing: nil) {
                 model.undoClear()
             }
@@ -142,6 +154,9 @@ struct BasketView: View {
     private var backgroundMenu: some View {
         Button("Clear Shelf", systemImage: "xmark.circle") { model.clearAll() }
             .disabled(model.items.isEmpty)
+        if model.collection.canPutBack {
+            Button("Put Back", systemImage: "arrow.uturn.backward") { model.putBack() }
+        }
         if model.collection.canUndoClear {
             Button("Undo Clear", systemImage: "arrow.uturn.backward") { model.undoClear() }
         }
@@ -157,12 +172,22 @@ struct BasketView: View {
 private struct SingleItemView: View {
     let model: BasketViewModel
     let item: BasketItem
+    @State private var isHovering = false
 
     var body: some View {
         VStack(spacing: 12) {
             ItemThumbnail(item: item, side: BasketMetrics.heroSide, style: .hero)
                 .frame(width: BasketMetrics.heroSide + 16, height: BasketMetrics.heroSide)
-                .overlay { FileDragSource(model: model, anchorID: item.id, role: .single) }
+                .overlay {
+                    FileDragSource(model: model, anchorID: item.id, role: .single) { hovering in
+                        withAnimation(.easeOut(duration: 0.12)) { isHovering = hovering }
+                    }
+                }
+                .overlay {
+                    if isHovering {
+                        ItemCornerActions(model: model, item: item, size: 18)
+                    }
+                }
                 .accessibilityHidden(true)
             VStack(spacing: 3) {
                 Text(item.name)
@@ -186,6 +211,7 @@ private struct SingleItemView: View {
         .accessibilityAction(named: "Quick Look") { model.quickLook([item]) }
         .accessibilityAction(named: "Show in Finder") { model.reveal([item]) }
         .accessibilityAction(named: "Remove from Shelf") { model.remove([item]) }
+        .accessibilityAction(named: "Move to Trash") { model.moveToTrash([item]) }
     }
 }
 
@@ -282,20 +308,10 @@ private struct GridCell: View {
                 withAnimation(.easeOut(duration: 0.12)) { isHovering = hovering }
             }
         }
-        .overlay(alignment: .topLeading) {
+        .overlay {
             if isHovering {
-                Button {
-                    model.remove([item])
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .symbolRenderingMode(.palette)
-                        .foregroundStyle(.white, Color.black.opacity(0.55))
-                        .font(.system(size: 15))
-                }
-                .buttonStyle(.plain)
-                .offset(x: 2, y: 2)
-                .help("Remove from Shelf")
-                .transition(.opacity)
+                ItemCornerActions(model: model, item: item, size: 15)
+                    .padding(2)
             }
         }
         .accessibilityElement(children: .ignore)
@@ -306,6 +322,59 @@ private struct GridCell: View {
         .accessibilityAction(named: "Quick Look") { model.quickLook([item]) }
         .accessibilityAction(named: "Show in Finder") { model.reveal([item]) }
         .accessibilityAction(named: "Remove from Shelf") { model.remove([item]) }
+        .accessibilityAction(named: "Move to Trash") { model.moveToTrash([item]) }
+    }
+}
+
+/// Hover controls on a file: take it off the shelf (top left) or move the file itself to the
+/// Trash (top right), kept in opposite corners so one is never mistaken for the other.
+private struct ItemCornerActions: View {
+    let model: BasketViewModel
+    let item: BasketItem
+    let size: CGFloat
+
+    var body: some View {
+        HStack(alignment: .top) {
+            CornerButton(symbol: "xmark.circle.fill", label: "Remove from Shelf", size: size) {
+                model.remove([item])
+            }
+            Spacer(minLength: 0)
+            CornerButton(symbol: "trash.circle.fill", label: "Move to Trash", size: size, isDestructive: true) {
+                model.moveToTrash([item])
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .transition(.opacity)
+    }
+}
+
+private struct CornerButton: View {
+    let symbol: String
+    let label: String
+    let size: CGFloat
+    var isDestructive = false
+    let action: () -> Void
+    @State private var isHovering = false
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: symbol)
+                .symbolRenderingMode(.palette)
+                .foregroundStyle(.white, circleColor)
+                .font(.system(size: size))
+                .contentShape(Circle())
+        }
+        .buttonStyle(.plain)
+        .onActiveHover { hovering in
+            withAnimation(.easeOut(duration: 0.12)) { isHovering = hovering }
+        }
+        .help(label)
+        .accessibilityLabel(label)
+    }
+
+    private var circleColor: Color {
+        guard isHovering else { return Color.black.opacity(0.55) }
+        return isDestructive ? Color.red : Color.black.opacity(0.75)
     }
 }
 

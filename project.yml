@@ -42,8 +42,8 @@ targets:
       path: Shelfy/Supporting/Shelfy.entitlements
       properties:
         com.apple.security.app-sandbox: true
-        com.apple.security.files.downloads.read-only: true
-        com.apple.security.files.user-selected.read-only: true
+        com.apple.security.files.downloads.read-write: true
+        com.apple.security.files.user-selected.read-write: true
         com.apple.security.files.bookmarks.app-scope: true
     settings:
       base:

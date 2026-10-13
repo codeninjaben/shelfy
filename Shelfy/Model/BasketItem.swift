@@ -3,9 +3,9 @@ import UniformTypeIdentifiers
 
 /// A reference to a file that arrived in the watched folder.
 ///
-/// Shelfy never moves or copies the file itself. It remembers where the file lives through a
-/// bookmark plus the file's identity (inode and volume), so it can follow renames and moves
-/// and notice when a different file has taken over the same name.
+/// Shelfy never copies the file and only moves it when asked to put it in the Trash. It remembers
+/// where the file lives through a bookmark plus the file's identity (inode and volume), so it can
+/// follow renames and moves and notice when a different file has taken over the same name.
 nonisolated struct BasketItem: Identifiable, Hashable, Codable, Sendable {
     var id: UUID
     var url: URL
@@ -79,9 +79,9 @@ nonisolated extension BasketItem {
 
     /// Records a bookmark so the item can follow the file after a rename or move.
     /// Security-scoped bookmarks keep the sandbox extension when the file leaves the
-    /// watched folder; a plain bookmark is the fallback.
+    /// watched folder (read-write, so Move to Trash works there too); a plain bookmark is the fallback.
     nonisolated mutating func makeBookmark() {
-        if let data = try? url.bookmarkData(options: [.withSecurityScope, .securityScopeAllowOnlyReadAccess],
+        if let data = try? url.bookmarkData(options: [.withSecurityScope],
                                             includingResourceValuesForKeys: nil, relativeTo: nil) {
             bookmark = data
             bookmarkIsSecurityScoped = true

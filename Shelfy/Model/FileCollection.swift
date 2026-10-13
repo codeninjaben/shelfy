@@ -14,12 +14,39 @@ final class FileCollection {
     private(set) var unseen: Set<UUID> = []
     /// Items removed by "Clear", kept briefly so the clear can be undone.
     private(set) var clearedItems: [BasketItem]?
+    /// Files the last "Move to Trash" sent to the Trash, kept briefly so they can be put back.
+    private(set) var trashedItems: [TrashedItem]?
+    /// A short-lived problem to show in place of the summary.
+    private(set) var notice: Notice?
+
+    /// A file in the Trash and where it sat on the shelf.
+    nonisolated struct TrashedItem: Sendable {
+        /// The item as it was, `url` being where the file lived before the Trash.
+        let item: BasketItem
+        let trashURL: URL
+        let index: Int
+    }
+
+    nonisolated enum Notice: Equatable, Sendable {
+        case trashFailed, putBackFailed
+    }
 
     @ObservationIgnored var onArrival: ((BasketItem) -> Void)?
     @ObservationIgnored var onItemsChanged: (() -> Void)?
+    /// Moves a file to the Trash and returns where it ended up. Tests use a scratch folder.
+    @ObservationIgnored var trashFile: @Sendable (URL) throws -> URL = { url in
+        var resulting: NSURL?
+        try FileManager.default.trashItem(at: url, resultingItemURL: &resulting)
+        return (resulting as URL?) ?? url
+    }
+    /// Moves a file from the Trash back to its original location.
+    @ObservationIgnored var putBackFile: @Sendable (_ trashURL: URL, _ original: URL) throws -> Void = { trashURL, original in
+        try FileManager.default.moveItem(at: trashURL, to: original)
+    }
     @ObservationIgnored private let store: BasketStore
     @ObservationIgnored private var scopedURLs: [UUID: URL] = [:]
     @ObservationIgnored private var undoExpiry: Task<Void, Never>?
+    @ObservationIgnored private var noticeExpiry: Task<Void, Never>?
     @ObservationIgnored private var pendingSave: Task<Void, Never>?
 
     init(store: BasketStore) {
@@ -28,6 +55,9 @@ final class FileCollection {
 
     var hasUnseen: Bool { !unseen.isEmpty }
     var canUndoClear: Bool { clearedItems != nil }
+    var canPutBack: Bool { trashedItems != nil }
+    /// Clear and Move to Trash share one undo, for whichever happened last.
+    var canUndo: Bool { canUndoClear || canPutBack }
 
     func item(withID id: UUID) -> BasketItem? {
         items.first { $0.id == id }
@@ -79,20 +109,12 @@ final class FileCollection {
     /// Removes every reference. The files themselves are untouched.
     func clear() {
         guard !items.isEmpty else { return }
-        if let previous = clearedItems {
-            // A second clear inside the undo window: release the earlier batch for good.
-            previous.forEach { endAccess($0.id) }
-        }
+        settlePendingUndo()
         clearedItems = items
         items = []
         unseen = []
         itemsDidChange()
-        undoExpiry?.cancel()
-        undoExpiry = Task { [weak self] in
-            try? await Task.sleep(for: Self.undoWindow)
-            guard !Task.isCancelled else { return }
-            self?.expireUndo()
-        }
+        scheduleUndoExpiry()
     }
 
     func undoClear() {
@@ -103,6 +125,121 @@ final class FileCollection {
         items = present + restored.filter { old in !present.contains { $0.refersToSameFile(as: old) } }
         revalidate(notify: false)
         itemsDidChange()
+    }
+
+    /// Undoes whichever of Clear and Move to Trash happened last.
+    func undo() {
+        if canPutBack { putBack() } else { undoClear() }
+    }
+
+    // MARK: Trash
+
+    /// Moves the files themselves to the Trash and takes them off the shelf. The moves run off the
+    /// main thread; a file that can't be moved comes back to the shelf with a notice.
+    @discardableResult
+    func moveToTrash(_ ids: Set<UUID>) -> Task<Void, Never>? {
+        let targets = items.enumerated().compactMap { index, item in
+            ids.contains(item.id) ? (index: index, item: item) : nil
+        }
+        guard !targets.isEmpty else { return nil }
+        settlePendingUndo()
+        items.removeAll { ids.contains($0.id) }
+        unseen.subtract(ids)
+        itemsDidChange()
+        let trashFile = trashFile
+        return Task.detached(priority: .userInitiated) { [weak self] in
+            var trashed: [TrashedItem] = []
+            var failed: [(index: Int, item: BasketItem)] = []
+            for (index, item) in targets {
+                switch FileLocator.locate(item) {
+                case .gone:
+                    continue // already deleted or trashed elsewhere: nothing left to move
+                case .inaccessible:
+                    failed.append((index, item))
+                case .found(let url, _):
+                    do {
+                        var original = item
+                        original.url = url
+                        trashed.append(TrashedItem(item: original, trashURL: try trashFile(url), index: index))
+                    } catch {
+                        Log.files.error("Could not move \(Log.redacted(item.name), privacy: .public) to the Trash: \(error.localizedDescription, privacy: .public)")
+                        failed.append((index, item))
+                    }
+                }
+            }
+            await self?.finishTrash(targets.map(\.item.id), trashed: trashed, failed: failed)
+        }
+    }
+
+    /// Moves the files from the last "Move to Trash" back where they were and returns them to
+    /// their old places on the shelf.
+    @discardableResult
+    func putBack() -> Task<Void, Never>? {
+        guard let batch = trashedItems else { return nil }
+        undoExpiry?.cancel()
+        trashedItems = nil
+        let putBackFile = putBackFile
+        return Task.detached(priority: .userInitiated) { [weak self] in
+            var restored: [TrashedItem] = []
+            var failures = 0
+            for entry in batch {
+                do {
+                    // Never replace a file that has taken the old name in the meantime.
+                    guard FileStatus(path: entry.item.url.path) == nil else { throw CocoaError(.fileWriteFileExists) }
+                    try putBackFile(entry.trashURL, entry.item.url)
+                    restored.append(entry)
+                } catch {
+                    Log.files.error("Could not put back \(Log.redacted(entry.item.name), privacy: .public): \(error.localizedDescription, privacy: .public)")
+                    failures += 1
+                }
+            }
+            await self?.finishPutBack(restored, failures: failures)
+        }
+    }
+
+    private func finishTrash(_ ids: [UUID], trashed: [TrashedItem], failed: [(index: Int, item: BasketItem)]) {
+        let failedIDs = Set(failed.map(\.item.id))
+        ids.filter { !failedIDs.contains($0) }.forEach(endAccess)
+        if !trashed.isEmpty {
+            Log.files.info("Moved \(trashed.count) file(s) to the Trash")
+            trashedItems = trashed
+            scheduleUndoExpiry()
+        }
+        guard !failed.isEmpty else {
+            onItemsChanged?()
+            return
+        }
+        for entry in failed.sorted(by: { $0.index < $1.index })
+        where !items.contains(where: { $0.refersToSameFile(as: entry.item) }) {
+            items.insert(entry.item, at: min(entry.index, items.count))
+        }
+        show(.trashFailed)
+        itemsDidChange()
+    }
+
+    private func finishPutBack(_ restored: [TrashedItem], failures: Int) {
+        for entry in restored.sorted(by: { $0.index < $1.index }) {
+            var item = entry.item
+            _ = item.refresh(at: item.url)
+            item.makeBookmark()
+            for duplicate in items where duplicate.refersToSameFile(as: item) { endAccess(duplicate.id) }
+            items.removeAll { $0.refersToSameFile(as: item) }
+            items.insert(item, at: min(entry.index, items.count))
+            beginAccess(item)
+        }
+        if failures > 0 { show(.putBackFailed) }
+        itemsDidChange()
+    }
+
+    private func show(_ notice: Notice) {
+        self.notice = notice
+        noticeExpiry?.cancel()
+        noticeExpiry = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(4))
+            guard !Task.isCancelled, let self else { return }
+            self.notice = nil
+            self.onItemsChanged?() // the footer may shrink back
+        }
     }
 
     func markAllSeen() {
@@ -186,9 +323,27 @@ final class FileCollection {
 
     // MARK: Private
 
+    /// A new undoable action replaces the previous one: let go of what that one was holding.
+    private func settlePendingUndo() {
+        undoExpiry?.cancel()
+        clearedItems?.forEach { endAccess($0.id) }
+        clearedItems = nil
+        trashedItems = nil
+    }
+
+    private func scheduleUndoExpiry() {
+        undoExpiry?.cancel()
+        undoExpiry = Task { [weak self] in
+            try? await Task.sleep(for: Self.undoWindow)
+            guard !Task.isCancelled else { return }
+            self?.expireUndo()
+        }
+    }
+
     private func expireUndo() {
         clearedItems?.forEach { endAccess($0.id) }
         clearedItems = nil
+        trashedItems = nil
         onItemsChanged?()
     }
 

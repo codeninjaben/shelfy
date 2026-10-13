@@ -156,6 +156,91 @@ final class FileCollectionTests: XCTestCase {
         XCTAssertEqual(collection.items.first?.isReadable, true)
     }
 
+    // MARK: Move to Trash
+
+    /// Points the collection at a scratch Trash so the tests never touch the real one.
+    private func useScratchTrash() throws -> URL {
+        let trash = root.appending(path: ".Trash", directoryHint: .isDirectory)
+        try FileManager.default.createDirectory(at: trash, withIntermediateDirectories: true)
+        collection.trashFile = { url in
+            let destination = trash.appending(path: url.lastPathComponent)
+            try FileManager.default.moveItem(at: url, to: destination)
+            return destination
+        }
+        return trash
+    }
+
+    func testMovingToTrashMovesOnlyThatFileAndTakesItOffTheShelf() async throws {
+        let trash = try useScratchTrash()
+        let keep = try makeFile("keep.txt")
+        let unwanted = try makeFile("unwanted.zip", contents: "zip")
+        collection.add(fileAt: keep)
+        let item = try XCTUnwrap(collection.add(fileAt: unwanted))
+
+        await collection.moveToTrash([item.id])?.value
+
+        XCTAssertEqual(collection.items.map(\.name), ["keep.txt"])
+        XCTAssertFalse(FileManager.default.fileExists(atPath: unwanted.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: trash.appending(path: "unwanted.zip").path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: keep.path), "only the chosen file goes to the Trash")
+        XCTAssertTrue(collection.canPutBack)
+    }
+
+    func testPutBackRestoresTheFileAndItsPlaceOnTheShelf() async throws {
+        _ = try useScratchTrash()
+        let urls = try ["one.txt", "two.txt", "three.txt"].map { try makeFile($0, contents: "content of \($0)") }
+        urls.forEach { collection.add(fileAt: $0) }
+        let middle = try XCTUnwrap(collection.items.first { $0.name == "two.txt" })
+
+        await collection.moveToTrash([middle.id])?.value
+        await collection.putBack()?.value
+
+        XCTAssertEqual(collection.items.map(\.name), ["three.txt", "two.txt", "one.txt"])
+        XCTAssertEqual(collection.items[1].id, middle.id)
+        XCTAssertEqual(try String(contentsOf: urls[1], encoding: .utf8), "content of two.txt")
+        XCTAssertFalse(collection.canPutBack)
+    }
+
+    func testAFileThatCannotBeTrashedStaysOnTheShelf() async throws {
+        collection.trashFile = { _ in throw CocoaError(.fileWriteNoPermission) }
+        let url = try makeFile("stubborn.pdf")
+        let item = try XCTUnwrap(collection.add(fileAt: url))
+
+        await collection.moveToTrash([item.id])?.value
+
+        XCTAssertEqual(collection.items.map(\.id), [item.id])
+        XCTAssertTrue(FileManager.default.fileExists(atPath: url.path))
+        XCTAssertEqual(collection.notice, .trashFailed)
+        XCTAssertFalse(collection.canPutBack)
+    }
+
+    func testPutBackNeverReplacesANewFileWithTheSameName() async throws {
+        _ = try useScratchTrash()
+        let url = try makeFile("report.pdf", contents: "original")
+        let item = try XCTUnwrap(collection.add(fileAt: url))
+        await collection.moveToTrash([item.id])?.value
+        try makeFile("report.pdf", contents: "a newer download")
+
+        await collection.putBack()?.value
+
+        XCTAssertEqual(try String(contentsOf: url, encoding: .utf8), "a newer download")
+        XCTAssertEqual(collection.notice, .putBackFailed)
+    }
+
+    func testUndoFollowsWhicheverActionCameLast() async throws {
+        _ = try useScratchTrash()
+        collection.add(fileAt: try makeFile("first.txt"))
+        let trashed = try XCTUnwrap(collection.add(fileAt: try makeFile("second.txt")))
+
+        await collection.moveToTrash([trashed.id])?.value
+        XCTAssertTrue(collection.canUndo)
+        collection.clear()
+        XCTAssertFalse(collection.canPutBack, "a newer clear replaces the Trash's undo")
+
+        collection.undo()
+        XCTAssertEqual(collection.items.map(\.name), ["first.txt"])
+    }
+
     // MARK: Persistence
 
     func testReferencesSurviveARelaunch() throws {
