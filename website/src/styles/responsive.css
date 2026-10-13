@@ -23,6 +23,42 @@
   .tour__cursor { display: none; }
 }
 
+/* Tablets and narrow windows: the tour stays side by side with its screen scaled to fit,
+   so the pinned stage never pushes the artwork below the window. Desktop is unchanged. */
+@media (min-width: 721px) and (max-width: 1040px) {
+  .tour__stage { flex-wrap: nowrap; gap: 32px; }
+  .tour__text { flex: 1 1 0; }
+  .tour__copy { height: 320px; }
+  .tour__scene h2 { font-size: clamp(32px, 4.2vw, 44px); }
+  .tour__visual { flex: none; max-width: none; }
+  .tour__screen { max-width: none; zoom: 0.7; }
+}
+@media (min-width: 721px) and (max-width: 947px) { .tour__screen { zoom: 0.6; } }
+@media (min-width: 721px) and (max-width: 871px) { .tour__screen { zoom: 0.5; } }
+@media (min-width: 721px) and (max-width: 795px) { .tour__screen { zoom: 0.42; } }
+@media (min-width: 721px) and (max-width: 734px) { .tour__screen { zoom: 0.38; } }
+
+/* Tall portrait tablets have room to stack the copy above a larger screen. */
+@media (min-width: 721px) and (max-width: 1040px) and (orientation: portrait) and (min-height: 900px) {
+  .tour__stage { height: calc(var(--stage) - var(--nav-h)); flex-wrap: wrap; align-content: center; }
+  .tour__text { flex: 1 1 100%; }
+  .tour__copy { height: 230px; }
+  .tour__visual { flex: 1 1 100%; justify-content: center; }
+  .tour__screen { zoom: 0.75; }
+}
+
+@media (max-width: 720px) {
+  /* Keep the tour's copy and screen together in the middle of the pinned stage. */
+  .tour__stage { align-content: center; }
+  /* Every setting stacks its label above its options. */
+  .control__label { width: 100%; }
+}
+
+@media (max-width: 520px) {
+  .get__actions { align-self: stretch; }
+  .get__actions .btn { flex: 1 1 100%; justify-content: center; padding-inline: 20px; font-size: 18px; white-space: nowrap; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .statement { height: auto; }
   .statement__stage { position: relative; top: auto; height: auto; padding-block: 64px; }

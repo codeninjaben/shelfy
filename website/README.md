@@ -38,7 +38,7 @@ The production domain is `https://getshelfy.app/`. `wrangler.jsonc` configures C
 
 Run the build before deploying the static output through the chosen hosting workflow. If the production domain changes, update `index.html`, `public/robots.txt`, `public/sitemap.xml`, and `wrangler.jsonc` together.
 
-The site links directly to the signed and notarized universal Mac ZIP on GitHub Releases. Update `site.releaseDownload` in `src/content.ts` when publishing a new version. Setting it to `null` enables the source ZIP and build instructions as a fallback. Distribution and copyright ownership are under Zazen Technology Group LLC.
+The site links directly to the Mac disk image (the signed and notarized universal app) on GitHub Releases. Update `site.releaseDownload` in `src/content.ts` when publishing a new version. Setting it to `null` enables the source ZIP and build instructions as a fallback. Distribution and copyright ownership are under Zazen Technology Group LLC.
 
 ## Design and scrolling
 
