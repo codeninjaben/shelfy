@@ -29,6 +29,8 @@ final class ItemMenuBuilder {
         menu.addItem(.separator())
         menu.addItem(ClosureMenuItem(count == 1 ? "Remove from Shelf" : "Remove \(count) Items from Shelf",
                                      symbol: "minus.circle") { model.remove(targets) })
+        menu.addItem(ClosureMenuItem(count == 1 ? "Move to Trash" : "Move \(count) Items to Trash",
+                                     symbol: "trash") { model.moveToTrash(targets) })
         return menu
     }
 

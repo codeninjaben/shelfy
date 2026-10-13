@@ -57,7 +57,7 @@ final class BasketViewModel {
         return effectiveMode == .grid ? .grid(itemCount: items.count) : .hero
     }
 
-    var showsFooter: Bool { !items.isEmpty || collection.canUndoClear }
+    var showsFooter: Bool { !items.isEmpty || collection.canUndo || collection.notice != nil }
 
     var preferredSize: CGSize {
         let width = surface == .edge ? BasketMetrics.edgeWidth : BasketMetrics.popoverWidth
@@ -183,6 +183,15 @@ final class BasketViewModel {
         collection.remove(ids)
     }
 
+    /// Moves the files themselves to the Trash (unlike `remove`, which only takes them off the shelf).
+    func moveToTrash(_ targets: [BasketItem]) {
+        let ids = Set(targets.map(\.id))
+        guard !ids.isEmpty else { return }
+        if app.quickLook.isVisible { app.quickLook.close() }
+        selection.subtract(ids)
+        collection.moveToTrash(ids)
+    }
+
     func clearAll() {
         selection.removeAll()
         collection.clear()
@@ -190,6 +199,15 @@ final class BasketViewModel {
 
     func undoClear() {
         collection.undoClear()
+    }
+
+    func putBack() {
+        collection.putBack()
+    }
+
+    /// Undoes whichever of Clear and Move to Trash happened last.
+    func undo() {
+        collection.undo()
     }
 
     func toggleMode() {
@@ -218,11 +236,12 @@ final class BasketViewModel {
             case "o": open(targets(anchor: nil))
             case "r": reveal(targets(anchor: nil))
             case "y": quickLook(targets(anchor: nil))
-            case "z": undoClear()
+            case "z": undo()
             case "w": collapse()
             case ",": app.openSettings()
             default:
-                if event.keyCode == KeyCode.delete { removeSelectionOrSingle() } else { return false }
+                // ⌘⌫ moves to the Trash, as in Finder; Delete on its own only takes files off the shelf.
+                if event.keyCode == KeyCode.delete { trashSelectionOrSingle() } else { return false }
             }
             return true
         }
@@ -256,6 +275,16 @@ final class BasketViewModel {
             remove(targets(anchor: nil))
         } else if items.count == 1 {
             remove(items)
+        } else {
+            NSSound.beep()
+        }
+    }
+
+    private func trashSelectionOrSingle() {
+        if !selection.isEmpty {
+            moveToTrash(targets(anchor: nil))
+        } else if items.count == 1 {
+            moveToTrash(items)
         } else {
             NSSound.beep()
         }

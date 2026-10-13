@@ -26,6 +26,11 @@ final class DebugCommands {
             "arrival": { $0.edge.playArrival() },
             "rearm-approach": { $0.edge.rearmApproachTracking(reason: "debug command") },
             "clear": { $0.collection.clear() },
+            // Only the test files scripts/simulate-downloads.sh creates, never a real download.
+            "trash-sim": { model in
+                model.edge.basket.moveToTrash(model.collection.items.filter { $0.name.hasPrefix("shelfy-sim-") })
+            },
+            "undo": { $0.collection.undo() },
             "quicklook": { model in
                 model.edge.basket.quickLook(model.edge.basket.targets(anchor: nil))
             },
